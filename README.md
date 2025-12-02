@@ -1,4 +1,4 @@
-# PhotoEvent API
+# EventDrop API
 
 A backend API for creating and managing event-based photo galleries. Event owners can create events, generate unique upload links, and allow guests to upload photos without authentication. Supports real-time updates using Socket.IO, photo moderation, likes/comments, and optional premium features.
 
