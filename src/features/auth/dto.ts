@@ -1,30 +1,8 @@
 import { Transform } from "class-transformer";
-import {
-  IsEmail,
-  IsIn,
-  IsMongoId,
-  IsNotEmpty,
-  IsOptional,
-  IsPhoneNumber,
-  IsString,
-  IsStrongPassword,
-} from "class-validator";
+import { IsNotEmpty, IsStrongPassword } from "class-validator";
+import { AddUserDto } from "../user/dto";
 
-export class SignUpDto {
-  @IsNotEmpty()
-  @IsString()
-  @Transform(({ value }) => (value as string).toLowerCase().trim())
-  firstname!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Transform(({ value }) => (value as string).toLowerCase().trim())
-  lastname!: string;
-
-  @IsEmail()
-  @Transform(({ value }) => (value as string).toLowerCase().trim())
-  email!: string;
-
+export class SignUpDto extends AddUserDto {
   @IsNotEmpty()
   @Transform(({ value }) => (value as string).trim())
   @IsStrongPassword(

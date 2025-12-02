@@ -2,7 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import authenticator, { Req } from "../../middlewares/authenticator";
 import { EventService } from "./service";
 import validator from "../../utilities/validator";
-import { AddEventDto } from "./dto";
+import { AddEventDto, EditEventDto } from "./dto";
 import response from "../../utilities/response";
 import { parser } from "../file/service";
 
@@ -18,6 +18,23 @@ router.post(
       response(
         res,
         await EventService.addEvent((req as Req).user, body, req.file)
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/edit",
+  authenticator,
+  parser.single("logo"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = await validator(EditEventDto, req.body, { whitelist: true });
+      response(
+        res,
+        await EventService.editEvent((req as Req).user, body, req.file)
       );
     } catch (error) {
       next(error);

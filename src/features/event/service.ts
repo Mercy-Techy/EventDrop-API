@@ -40,7 +40,7 @@ export class EventService {
       return {
         status: true,
         message: "Event successfully added",
-        data: { ...event, created_by: user },
+        data: event,
       };
     } catch (error: any) {
       return { status: false, message: error.message, data: error };
@@ -53,14 +53,14 @@ export class EventService {
     file?: file
   ): Promise<ServiceResponse> {
     try {
-      const details: any = body;
-      for (let detail in details) {
-        if (!details[detail]) throw new Error(`${detail} is required`);
-      }
+      const { id, ...details } = body;
       const event = await (
-        await pool.query(`SELECT * FROM events WHERE id = $1`, [details.id])
+        await pool.query(
+          `SELECT * FROM events WHERE id = $1 AND created_by = $2`,
+          [id, user.id]
+        )
       ).rows[0];
-      if (event) throw new Error("Event does not exist");
+      if (!event) throw new Error("Event does not exist");
 
       let logo_url = event.logo_url || null;
       let logo_public_id = event.logo_public_id || null;
@@ -75,24 +75,27 @@ export class EventService {
           logo_public_id = uploadedFile.public_id;
         }
       }
-
-      const eventv = (
+      const updatedEvent = (
         await pool.query(
-          `Update events SET title = $1,description = $2,event_location = $3,event_date,event_time,link_expires_at,created_by,generated_link,logo_url,logo_public_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
-          [...Object.values(details), logo_url, logo_public_id]
+          `UPDATE events SET title = $1,description = $2,event_location = $3,event_date = $4,event_time = $5,link_expires_at = $6,logo_url = $7,logo_public_id = $8, updated_at = $9 WHERE id = $10 RETURNING *`,
+          [
+            ...Object.values(details),
+            logo_url,
+            logo_public_id,
+            new Date(),
+            event.id,
+          ]
         )
       ).rows[0];
       return {
         status: true,
         message: "Event successfully added",
-        data: { ...event, created_by: user },
+        data: updatedEvent,
       };
     } catch (error: any) {
       return { status: false, message: error.message, data: error };
     }
   }
-
-  //edit event
 
   // endpoint is used by event owner to upload images
   static async uploadImage(

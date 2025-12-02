@@ -26,32 +26,8 @@ export class AddEventDto {
   link_expires_at?: number;
 }
 
-export class EditEventDto {
+export class EditEventDto extends AddEventDto {
   @IsNotEmpty()
   @IsString()
   id!: string;
-
-  @IsOptional()
-  @IsString()
-  title?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsString()
-  event_location?: string;
-
-  @IsOptional()
-  @IsString()
-  event_date?: string;
-
-  @IsOptional()
-  @IsString()
-  event_time?: string;
-
-  @IsOptional()
-  @IsInt()
-  link_expires_at?: number;
 }

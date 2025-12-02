@@ -24,6 +24,30 @@ export const eventDocs = {
     {},
     "multipart/form-data"
   ),
+  "/event/edit": docFormatter(
+    "put",
+    "Event",
+    "Edit Event",
+    true,
+    [],
+    null,
+    {
+      id: { type: "string", example: "3bc95fd9-55d0-4436-b6d8-711c507b955e" },
+      title: { type: "string", example: "Annual tech event" },
+      description: {
+        type: "string",
+        example:
+          "an event where all tech companies gather together to rub minds together",
+      },
+      event_location: { type: "string", example: "Lagos state" },
+      event_date: { type: "string", example: "22-11-2025" },
+      event_time: { type: "string", example: "12:00" },
+      link_expires_at: { type: "number", example: 10 },
+      logo: { type: "string", format: "binary" },
+    },
+    {},
+    "multipart/form-data"
+  ),
   "/event/fetch": docFormatter(
     "get",
     "Event",
