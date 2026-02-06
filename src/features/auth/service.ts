@@ -1,5 +1,5 @@
 import { pool } from "../../config/database";
-import { signJWT } from "../../utilities/jwt";
+import { decodeJWT, signJWT, signRefreshJWT } from "../../utilities/jwt";
 import mailer from "../../utilities/mailer";
 import { ServiceResponse } from "../../utilities/response";
 import TokenService from "../token/token.service";
@@ -155,12 +155,37 @@ export class AuthService {
         email: user.email,
         id: user.id,
       });
+      const refreshToken = signRefreshJWT({
+        email: user.email,
+        id: user.id,
+      });
 
       const { password: ps, ...rest } = user;
       return {
         message: "Welcome to EventDrop",
         status: true,
-        data: { user: rest, token },
+        data: { user: rest, token, refreshToken },
+      };
+    } catch (error: any) {
+      return { status: false, message: error?.message, data: error };
+    }
+  }
+  static async refreshAccess(refreshToken: string): Promise<ServiceResponse> {
+    try {
+      const payload: { id: string; email: string } = decodeJWT(refreshToken);
+      const user = (
+        await pool.query(`SELECT * users WHERE id = $1`, [payload.id])
+      ).rows[0];
+      if (!user) throw new Error("You do not have an account with us");
+      const token = signJWT({
+        email: user.email,
+        id: user.id,
+      });
+
+      return {
+        message: "Successful",
+        status: true,
+        data: token,
       };
     } catch (error: any) {
       return { status: false, message: error?.message, data: error };

@@ -12,6 +12,7 @@ import swaggerUi from "swagger-ui-express";
 import helmet from "helmet";
 import errorHandler from "./middlewares/errorHandler";
 import router from "./router";
+import cookieparser from "cookie-parser";
 
 config();
 database();
@@ -20,7 +21,13 @@ const app: Application = express();
 const PORT = process.env.PORT || 8090;
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    // origin: ""
+  })
+);
+app.use(cookieparser());
 app.use(json());
 
 morganBody(app, {

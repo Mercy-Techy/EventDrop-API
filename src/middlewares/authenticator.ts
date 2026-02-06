@@ -13,7 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (!token) throw new Error("Unauthorized");
     let payload: { email: string; id: string };
     payload = decodeJWT(token);
-    let user = await (
+    let user = (
       await pool.query(`SELECT * FROM users WHERE id = $1`, [payload.id])
     ).rows[0];
     if (!user) throw new Error("Invalid Token");

@@ -15,7 +15,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.post(
@@ -26,7 +26,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 router.post(
   "/resend-verification-email",
@@ -36,7 +36,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.post(
@@ -47,7 +47,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 router.post(
   "/reset-password",
@@ -58,7 +58,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.post(
@@ -66,11 +66,29 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = await validator(LoginDto, req.body);
-      response(res, await AuthService.login(body));
+      const result = await AuthService.login(body);
+      const { refreshToken, ...data } = result.data; // destructured this to remove refreshtoken fron the data that will be sent to the frontend and to also send it as a cookie
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        // secure: true, // HTTPS only (true in prod)
+        // sameSite: "strict",
+      });
+      response(res, { ...result, data });
     } catch (error) {
       next(error);
     }
-  }
+  },
+);
+
+router.post(
+  "/refresh-token",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      response(res, await AuthService.refreshAccess(req.cookies.refreshToken));
+    } catch (error) {
+      next(error);
+    }
+  },
 );
 
 export default router;
