@@ -1,5 +1,4 @@
 import { ServiceResponse } from "../../utilities/response";
-import { TokenModel } from "./token.schema";
 import { pool } from "../../config/database";
 import random from "randomstring";
 
@@ -32,14 +31,14 @@ export default class TokenService {
   static async createToken(
     user: string,
     type: string,
-    length?: number
+    length?: number,
   ): Promise<string> {
     const token = await this.generateToken(length || 6);
     if (!token.status) throw new Error(token.message);
     await pool.query(`DELETE FROM tokens WHERE user_id = $1`, [user]);
     await pool.query(
       `INSERT INTO tokens (user_id,type,token,expiresAt) VALUES ($1, $2, $3, NOW() + interval '5 minutes')`,
-      [user, type, token.data]
+      [user, type, token.data],
     );
     return token.data;
   }
@@ -56,7 +55,7 @@ export default class TokenService {
       if (tokenData) {
         await pool.query(
           `DELETE FROM tokens WHERE user_id = $1 AND type = $2`,
-          [tokenData.user_id, type]
+          [tokenData.user_id, type],
         );
         throw new Error("Token expired");
       }
