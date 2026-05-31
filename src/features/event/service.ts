@@ -10,7 +10,7 @@ export class EventService {
   static async addEvent(
     user: IUser,
     body: AddEventDto,
-    file?: file
+    file?: file,
   ): Promise<ServiceResponse> {
     try {
       const details = body;
@@ -27,14 +27,15 @@ export class EventService {
       const generated_link = await TokenService.generateLinkToken();
       const event = (
         await pool.query(
-          `INSERT INTO events(title,description,event_location,event_date,event_time,link_expires_at,created_by,generated_link,logo_url,logo_public_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+          `INSERT INTO events(title,description,event_location,event_date,event_time,link_expires_at,created_by,generated_link,logo_url,logo_public_id,noofimages) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
           [
             ...Object.values(details),
             user.id,
             generated_link,
             logo_url,
             logo_public_id,
-          ]
+            0,
+          ],
         )
       ).rows[0];
       return {
@@ -50,14 +51,14 @@ export class EventService {
   static async editEvent(
     user: IUser,
     body: EditEventDto,
-    file?: file
+    file?: file,
   ): Promise<ServiceResponse> {
     try {
       const { id, ...details } = body;
       const event = await (
         await pool.query(
           `SELECT * FROM events WHERE id = $1 AND created_by = $2`,
-          [id, user.id]
+          [id, user.id],
         )
       ).rows[0];
       if (!event) throw new Error("Event does not exist");
@@ -84,7 +85,7 @@ export class EventService {
             logo_public_id,
             new Date(),
             event.id,
-          ]
+          ],
         )
       ).rows[0];
       return {
@@ -101,14 +102,14 @@ export class EventService {
   static async uploadImage(
     userId: string,
     eventId: string,
-    image: file
+    image: file,
   ): Promise<ServiceResponse> {
     try {
       if (!image) throw new Error("Kindly upload the image");
       const event = (
         await pool.query(
           `SELECT * FROM events WHERE id = $1 AND created_by = $2`,
-          [eventId, userId]
+          [eventId, userId],
         )
       ).rows[0];
       if (!event) throw new Error("Event does not exist");
@@ -123,7 +124,7 @@ export class EventService {
             eventId,
             uploadedImage.url,
             uploadedImage.public_id,
-          ]
+          ],
         )
       ).rows[0];
       return {
@@ -140,7 +141,7 @@ export class EventService {
   static async uploadImageByVisitors(
     generated_link: string,
     image: file,
-    ip: string
+    ip: string,
   ): Promise<ServiceResponse> {
     try {
       if (!image) throw new Error("Kindly upload the image");
@@ -155,7 +156,7 @@ export class EventService {
       const savedImage = (
         await pool.query(
           `INSERT INTO images(visitor,event_id,image_url,image_public_id) VALUES($1,$2,$3,$4) RETURNING *`,
-          [ip, event.id, uploadedImage.url, uploadedImage.public_id]
+          [ip, event.id, uploadedImage.url, uploadedImage.public_id],
         )
       ).rows[0];
       return {
@@ -172,7 +173,7 @@ export class EventService {
   static async fetchEvents(
     userId: string,
     page: number,
-    limit: number
+    limit: number,
   ): Promise<ServiceResponse> {
     try {
       const data = await Paginator({
@@ -195,7 +196,7 @@ export class EventService {
   static async fetchEventImages(
     event: string,
     page: number,
-    limit: number
+    limit: number,
   ): Promise<ServiceResponse> {
     try {
       const eventImages = await Paginator({
@@ -213,13 +214,13 @@ export class EventService {
 
   // visitors use this endpoint to fetch the event the link is attached to
   static async fetchEventByLink(
-    generated_link: string
+    generated_link: string,
   ): Promise<ServiceResponse> {
     try {
       const event = (
         await pool.query(
           `SELECT e.*, u.lastname, u.firstname, u.avatar_url FROM events e INNER JOIN users u ON e.created_by = u.id WHERE generated_link = $1`,
-          [generated_link]
+          [generated_link],
         )
       ).rows[0];
       if (!event) throw new Error("Event does not exist");

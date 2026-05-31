@@ -7,10 +7,10 @@ config();
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "MedyKare API",
+    title: "EventDrop API",
     version: "1.0.0",
     description:
-      "MedyKare is an Health Application connecting patients with doctors, laboratories and pharmacies.",
+      "A backend API for creating and managing event-based photo galleries. Event owners can create events, generate unique upload links, and allow guests to upload photos without authentication. Supports real-time updates using Socket.IO, photo moderation, likes/comments, and optional premium features.",
   },
   servers: [
     {

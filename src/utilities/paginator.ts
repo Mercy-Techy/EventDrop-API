@@ -24,9 +24,19 @@ const Paginator = async ({
     `SELECT ${select} FROM ${table} ${join} ${filter && "WHERE " + filter} ${
       sort && "ORDER BY " + sort
     } LIMIT ${limit} OFFSET ${OFFSET}`,
-    filterValues
+    filterValues,
   );
-  const totalItems = queryDetails.rowCount;
+
+  const countDetails = await pool.query(
+    `
+      SELECT COUNT(*) AS total
+      FROM ${table}
+      ${join}
+      ${filter ? `WHERE ${filter}` : ""}
+    `,
+    filterValues,
+  );
+  const totalItems = Number(countDetails.rows[0].total);
   const totalPages = Math.ceil((totalItems || 0) / limit);
   return {
     totalItems,
