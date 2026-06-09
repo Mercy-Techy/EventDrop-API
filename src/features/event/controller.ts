@@ -17,12 +17,12 @@ router.post(
       const body = await validator(AddEventDto, req.body);
       response(
         res,
-        await EventService.addEvent((req as Req).user, body, req.file)
+        await EventService.addEvent((req as Req).user, body, req.file),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.put(
@@ -34,12 +34,12 @@ router.put(
       const body = await validator(EditEventDto, req.body, { whitelist: true });
       response(
         res,
-        await EventService.editEvent((req as Req).user, body, req.file)
+        await EventService.editEvent((req as Req).user, body, req.file),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
@@ -52,13 +52,13 @@ router.get(
         await EventService.fetchEvents(
           (req as Req).user.id,
           +(req.query.page || 1),
-          +(req.query.limit || 10)
-        )
+          +(req.query.limit || 10),
+        ),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.post(
@@ -72,13 +72,13 @@ router.post(
         await EventService.uploadImage(
           (req as Req).user.id,
           String(req.params.eventId),
-          req.file!
-        )
+          req.file!,
+        ),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 router.post(
   "/upload-image-visitor/:generated_link",
@@ -90,13 +90,13 @@ router.post(
         await EventService.uploadImageByVisitors(
           String(req.params.generated_link),
           req.file!,
-          req.ip!
-        )
+          req.ip!,
+        ),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
@@ -108,13 +108,13 @@ router.get(
         await EventService.fetchEventImages(
           String(req.params.eventId),
           +(req.query.page || 1),
-          +(req.query.limit || 10)
-        )
+          +(req.query.limit || 10),
+        ),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
@@ -123,12 +123,22 @@ router.get(
     try {
       response(
         res,
-        await EventService.fetchEventByLink(String(req.params.generated_link))
+        await EventService.fetchEventByLink(String(req.params.generated_link)),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
+router.get(
+  "/fetch-event-by-id/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      response(res, await EventService.fetchEventById(String(req.params.id)));
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 export default router;

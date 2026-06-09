@@ -22,7 +22,7 @@ export const eventDocs = {
       logo: { type: "string", format: "binary" },
     },
     {},
-    "multipart/form-data"
+    "multipart/form-data",
   ),
   "/event/edit": docFormatter(
     "put",
@@ -46,7 +46,7 @@ export const eventDocs = {
       logo: { type: "string", format: "binary" },
     },
     {},
-    "multipart/form-data"
+    "multipart/form-data",
   ),
   "/event/fetch": docFormatter(
     "get",
@@ -54,7 +54,7 @@ export const eventDocs = {
     "Fetch all events owned by user",
     true,
     [],
-    "default"
+    "default",
   ),
   "/event/upload-image/{eventId}": docFormatter(
     "post",
@@ -67,7 +67,7 @@ export const eventDocs = {
       image: { type: "string", format: "binary" },
     },
     {},
-    "multipart/form-data"
+    "multipart/form-data",
   ),
   "/event/upload-image-visitor/{generated_link}": docFormatter(
     "post",
@@ -80,7 +80,7 @@ export const eventDocs = {
       image: { type: "string", format: "binary" },
     },
     {},
-    "multipart/form-data"
+    "multipart/form-data",
   ),
   "/event/fetch-images/{eventId}": docFormatter(
     "get",
@@ -88,13 +88,20 @@ export const eventDocs = {
     "Fetch event images",
     false,
     [{ in: "path", name: "eventId", schema: { type: "string" } }],
-    "add"
+    "add",
   ),
   "/event/fetch-event/{generated_link}": docFormatter(
     "get",
     "Event",
     "Fetch event",
     false,
-    [{ in: "path", name: "generated_link", schema: { type: "string" } }]
+    [{ in: "path", name: "generated_link", schema: { type: "string" } }],
+  ),
+  "/event/fetch-event-by-id/{id}": docFormatter(
+    "get",
+    "Event",
+    "Fetch event by Id",
+    false,
+    [{ in: "path", name: "id", schema: { type: "string" } }],
   ),
 };

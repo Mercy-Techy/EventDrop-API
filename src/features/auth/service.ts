@@ -47,7 +47,7 @@ export class AuthService {
       const user = (
         await pool.query(
           `UPDATE users SET emailverified = $1 WHERE id = $2 RETURNING *`,
-          [true, tokenUser]
+          [true, tokenUser],
         )
       ).rows[0];
       if (!user) throw new Error("Invalid token");
@@ -123,7 +123,7 @@ export class AuthService {
       const user = (
         await pool.query(
           `UPDATE users SET password = $1 WHERE id = $2 RETURNING *`,
-          [hsPw, tokenUser]
+          [hsPw, tokenUser],
         )
       ).rows[0];
       if (!user)
@@ -174,7 +174,7 @@ export class AuthService {
     try {
       const payload: { id: string; email: string } = decodeJWT(refreshToken);
       const user = (
-        await pool.query(`SELECT * users WHERE id = $1`, [payload.id])
+        await pool.query(`SELECT * FROM users WHERE id = $1`, [payload.id])
       ).rows[0];
       if (!user) throw new Error("You do not have an account with us");
       const token = signJWT({

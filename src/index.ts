@@ -21,10 +21,12 @@ const app: Application = express();
 const PORT = process.env.PORT || 8090;
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
+const allowedOrigins = ["http://localhost:5173"];
+
 app.use(
   cors({
+    origin: allowedOrigins,
     credentials: true,
-    // origin: ""
   }),
 );
 app.use(cookieparser());

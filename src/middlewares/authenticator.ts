@@ -2,6 +2,7 @@ import { Response, NextFunction, Request } from "express";
 import { decodeJWT } from "../utilities/jwt";
 import { pool } from "../config/database";
 import { IUser } from "../features/user/dto";
+import response from "../utilities/response";
 
 export interface Req extends Request {
   user: IUser;
@@ -19,7 +20,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (!user) throw new Error("Invalid Token");
     (req as Req).user = user;
     next();
-  } catch (error) {
-    next(error);
+  } catch (error: any) {
+    return response(res, {
+      status: false,
+      message: error.message,
+      data: error,
+      code: 401,
+    });
   }
 };

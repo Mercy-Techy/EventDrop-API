@@ -204,8 +204,11 @@ export class EventService {
         filter: "event_id = $1",
         page,
         limit,
+        select: "image_url",
         filterValues: [event],
       });
+      const urls = eventImages.data.map((ig) => ig.image_url);
+      eventImages.data = urls;
       return { status: true, message: "Event images", data: eventImages };
     } catch (error: any) {
       return { status: true, message: error.message, data: error };
@@ -222,6 +225,18 @@ export class EventService {
           `SELECT e.*, u.lastname, u.firstname, u.avatar_url FROM events e INNER JOIN users u ON e.created_by = u.id WHERE generated_link = $1`,
           [generated_link],
         )
+      ).rows[0];
+      if (!event) throw new Error("Event does not exist");
+      return { status: true, message: "Event details", data: event };
+    } catch (error: any) {
+      return { status: true, message: error.message, data: error };
+    }
+  }
+
+  static async fetchEventById(id: string): Promise<ServiceResponse> {
+    try {
+      const event = (
+        await pool.query(`SELECT * FROM events WHERE id = $1`, [id])
       ).rows[0];
       if (!event) throw new Error("Event does not exist");
       return { status: true, message: "Event details", data: event };
